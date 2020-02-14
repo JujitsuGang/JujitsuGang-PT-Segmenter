@@ -33,4 +33,163 @@ h2 {
   margin-right: 32px;
   color: #AAAAAA;
   font-size: 14px;
-  padding: 8px 1
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.unselectable {
+  user-select: none;
+}
+
+.highlighted-label-box {
+  font-weight: 600;
+  color: yellow;
+}
+
+.token {
+  margin-bottom: 12px;
+  margin-left: 6px;
+  padding: 4px;
+  border-width: thin;
+  border-style: dotted;
+  border-color: #CCCCCC;
+  border-radius: 4px;
+  font-size: 16px;
+  display: inline-block;
+}
+
+#segment-board {
+  width: 100%;
+  clear: left;
+  padding-top: 20px;
+  overflow: visible;
+  max-width: 100%;
+}
+
+.segment-start-rule {
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 32px;
+  color: #888888;
+  border-style: solid;
+}
+
+.segment-start-numbering {
+  margin-left: 8px;
+  font-size: 18px;
+  margin-right: 8px;
+  color: #2671D4;
+}
+
+.column {
+  width: 50%;
+  float: left;
+  padding-bottom: 8px;
+  padding-right: 8px;
+}
+
+.column ul {
+  margin-left: 0px;
+  padding-left: 4px;
+}
+
+.column li {
+  list-style: none;
+  padding-left: 4px;
+}
+
+#action-board {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 30px;
+}
+
+.hoverable {
+  cursor: pointer;
+}
+
+.hoverable:disabled {
+  cursor: default;
+}
+
+button {
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  border-radius: 4px;
+  text-align: center;
+  padding: 8px 32px;
+  margin-top: 8px;
+  margin-right: 32px;
+  margin-left: 32px;
+  background-color: #2A2A2A;
+  border-style: dashed;
+}
+
+button:hover {
+  background-color: #3A3A3A;
+  border-style: solid;
+}
+
+button:disabled {
+  background-color: #232526;
+  border-style: solid;
+  border-color: #111111;
+  color: gray;
+}
+
+#button-save {
+  border-color: rgb(153, 35, 27);
+  margin-bottom: 32px;
+}
+
+#button-save:disabled {
+  border-color: #111111;
+}
+
+#label-help-menu {
+  margin-top: 16px;
+  padding-left: 8px;
+  margin-left: 16px;
+  text-align: left;
+}
+
+#label-help-menu li {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  color: #AAAAAA;
+  font-size: 16px;
+}
+
+#hint-message-box {
+  width: 100%;
+  color: #888888;
+  font-size: 14px;
+  margin-top: 32px;
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+#hint-message-box a:link, #hint-message-box a:visited {
+  text-decoration: none;
+  color: #888888;
+}
+
+#refresh-countdown-panel {
+  clear: both;
+  font-size: 14px;
+  color: #888888;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.highlighted {
+  background-color: #4169e1 !important;
+  border-width: 3px !important;
+  border: solid !important;
+  border-radius: 0px !important;
+}
+
+.highlighted:hover {
+  background-color: #5179f1 !important;
+}
