@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"></meta>
+    <title>Interactive token-wise label refinery</title>
+    <link href="style.css" rel="stylesheet" type="text/css"></link>
+  </head>
+
+  <body oncontextmenu="return false;">
+    <header>
+      <div id="refresh-countdown-panel">
+        Auto-refresh check in <span id="refresh-countdown-panel-value"></span> ...
+      </div>
+
+      <div class="column" style="text-align: center;" id="label-board">
+        <h2>Labels</h2>
+
+        <span class="hoverable unselectable label-box-commands" id="box-label-prev">&#8592; / A</span>
+        <span class="hoverable unselectable label-box" cls-id="0">[0]: No-op       </span>
+        <span class="hoverable unselectable label-box" cls-id="1">[1]: Segment     </span>
+        <span class="hoverable unselectable label-box" cls-id="2">[2]: Noise start </span>
+        <span class="hoverable unselectable label-box" cls-id="3">[3]: Noise end   </span>
+        <span class="hoverable unselectable label-box-commands" id="box-label-next">&#8594; / D</span>
+
+        <div id="hint-message-box">
+          <a href="#label-help-menu">
+            Check 'hints' section at the end of this page for available shortcuts.
+          </a>
+        </div>
+
+      </div>
+
+      <div class="column" id="stat-board">
+        <h2>Statistics</h2>
+        <ul>
+          <li id="total-modified-tokens">Total modified tokens: <span id="value-total-modified-tokens"></span></li>
+        </ul>
+      </div>
+    </header>
+
+    <h2>Segment board</h2>
+    <div class="unselectable" id="segment-board">
+    </div>
+
+    <h2>Action board</h2>
+    <div id="action-board">
+      <button class="hoverable" id="button-save">Save &amp; Finish</button>
+    </div>
+
+    <h2>Hints</h2>
+    <ol id="label-help-menu">
+      <li> Left-click on token: toggle no-op label 🡘 currently selected label; </div>
+      <li> Right-click on token: toggle no-op label 🡘 token original label; </div>
+      <li> You can select classes using keyboard numerals (0, 1, 2, 3); </div>
+      <li> You can switch classes using keyboard keys &#8592; / A and &#8594; / D; </div>
+      <li> Space bar (single press): scroll down to the page end; </div>
+      <li> Space bar (double press): scroll up to the page start. </div>
+    </ol>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

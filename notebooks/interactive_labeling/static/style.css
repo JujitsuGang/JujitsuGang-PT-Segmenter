@@ -1,0 +1,36 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #232526;
+  color: white;
+  max-width: 100%;
+}
+
+h2 {
+  clear: both;
+  font-size: 18px;
+  font-style: italic;
+  margin-top: 32px;
+  background-color: #333333;
+  text-align: left;
+}
+
+.column h2 {
+  margin-top: 4px;
+}
+
+.label-box {
+  margin-right: 5px;
+  margin-left: 5px;
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.label-box-commands {
+  margin-right: 32px;
+  color: #AAAAAA;
+  font-size: 14px;
+  padding: 8px 1
