@@ -121,4 +121,69 @@ def run(redo_hparam_search: bool = False):
 
         param_distributions = {
             "c1": scipy.stats.expon(scale=0.5),
-            "c
+            "c2": scipy.stats.expon(scale=0.5),
+            "min_freq": scipy.stats.randint(low=5, high=50),
+        }
+
+        rng = np.random.RandomState(241500)
+
+        sample_size = 400
+        sample_inds = rng.choice(len(train_feats), replace=False, size=sample_size)
+        sample_train_feats = [train_feats[i] for i in sample_inds]
+        sample_train_labels = [train_labels[i] for i in sample_inds]
+
+        assert len(sample_train_feats) == len(sample_train_labels) == sample_size
+        assert len(sample_inds) == len(set(sample_inds))
+
+        for fn in param_distributions.values():
+            fn.random_state = np.random.RandomState(rng.randint(1, 2**31 - 1))
+
+        for _ in np.arange(50):
+            splitter = sklearn.model_selection.KFold(n_splits=3, shuffle=True, random_state=rng.randint(1, 2**31 - 1))
+            hparams = {k: fn.rvs() for k, fn in param_distributions.items()}
+            cur_eval_scores = []
+
+            for inds_train, inds_eval in splitter.split(sample_train_feats, sample_train_labels):
+                X_train = [train_feats[i] for i in inds_train]
+                X_eval = [train_feats[i] for i in inds_eval]
+
+                y_train = [train_labels[i] for i in inds_train]
+                y_eval = [train_labels[i] for i in inds_eval]
+
+                segmenter = sklearn_crfsuite.CRF(algorithm="lbfgs", **hparams)
+                segmenter.fit(X_train, y_train)
+                y_preds = segmenter.predict(X_eval)
+
+                y_preds = np.asarray([int(yi == "START") for yi in itertools.chain(*y_preds)])
+                y_eval = np.asarray([int(yi == "START") for yi in itertools.chain(*y_eval)])
+
+                assert len(y_preds) == len(y_eval)
+
+                eval_score = sklearn.metrics.f1_score(y_true=y_eval, y_pred=y_preds, average="binary")
+                cur_eval_scores.append(eval_score)
+
+            eval_score = float(np.mean(cur_eval_scores))
+            print(hparams, eval_score)
+
+            if best_score < eval_score:
+                best_score = eval_score
+                best_config = hparams.copy()
+
+    print("Best config:")
+    print(best_config, best_score, end="\n\n")
+
+    segmenter = sklearn_crfsuite.CRF(algorithm="lbfgs", **best_config)
+    segmenter.fit(train_feats, train_labels)
+
+    y_preds = segmenter.predict(test_feats)
+    sents_pred = build_sents(test_tokens, y_preds)
+
+    # NOTE: removing whitespaces for comparison because CRF's output insert additional spaces before punctuation symbols.
+    print(approx_recall_and_precision.estimate_seg_perf(sents_pred, flatten_test_docs, remove_whitespaces=True))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--redo-hparam-search", action="store_true", help="If enabled, redo hyper-parameter optimization.")
+    args = parser.parse_args()
+    run(**vars(args))
