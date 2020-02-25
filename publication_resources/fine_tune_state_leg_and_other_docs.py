@@ -123,4 +123,90 @@ def compute_undersampling_stats(dt, indices_by_state, m):
     for _ in tqdm.tqdm(np.arange(100)):
         undersampled_inds = undersample_inds(indices_by_state, rng, m=m)
         token_count_per_state = [list(itertools.chain(map(len, dt.select(inds)["input_ids"]))) for _, inds in undersampled_inds]
-   
+        token_counts.extend(list(itertools.chain(*token_count_per_state)))
+        print(sum(list(itertools.chain(*token_count_per_state))))
+
+    print("length :", len(token_counts))
+    print("avg len:", round(np.mean(token_counts), 2))
+    print("std len:", round(np.std(token_counts), 2))
+
+
+def kfold_with_undersampling(dt, indices_by_state):
+    lens_by_state = {k: len(v) for k, v in indices_by_state.items()}
+    m = int(min(lens_by_state.values()))
+    rng = np.random.RandomState(1485)
+
+    pbar = tqdm.tqdm(range(10))
+
+    output_dir = "results/state_legislation_finetuning/first_experiment__per_state"
+    output_name = f"test_results_state_leg_{m}_inst_per_state.json"
+    output_name = os.path.join(output_dir, output_name)
+
+    all_res = collections.defaultdict(list)
+
+    if os.path.exists(output_name):
+        with open(output_name, "r", encoding="utf-8") as f_in:
+            all_res.update(json.load(f_in))
+
+        assert all_res
+
+    test_inference_kwargs = {
+        "return_logits": True,
+        "show_progress_bar": True,
+        "window_shift_size": 1.0,
+        "moving_window_size": 1024,
+        "apply_postprocessing": False,
+        "batch_size": 16,
+    }
+
+    def compute_metrics_(
+        labels, logits, group_ids: list[int], sorted_state_names: list[str], prefix: str, all_res: dict[str, list[float]]
+    ) -> None:
+        assert len(labels) == len(logits) == len(group_ids), (len(labels), len(logits), len(group_ids))
+        assert len(sorted_state_names) == len(indices_by_state)
+
+        metrics_micro = utils.fn_compute_metrics(labels=labels, logits=logits)
+
+        for l, v in metrics_micro.items():
+            all_res[f"{prefix}{l}"].append(v)
+
+        group_ids = np.asarray(group_ids)
+
+        for i, state in enumerate(sorted_state_names):
+            cur_inst_ids = np.flatnonzero(group_ids == i)
+            cur_labels = labels[cur_inst_ids]
+            cur_logits = logits[cur_inst_ids, :]
+            assert len(cur_labels) == len(cur_logits) == len(cur_inst_ids)
+            metrics_state = utils.fn_compute_metrics(labels=cur_labels, logits=cur_logits)
+            for l, v in metrics_state.items():
+                all_res[f"{prefix}{l}@{state}"].append(v)
+
+    for repetition_id in pbar:
+        undersampled_state_to_inds = undersample_inds(indices_by_state, rng=rng, m=m)
+        sorted_state_names = [state_name for state_name, _ in undersampled_state_to_inds]
+
+        assert isinstance(undersampled_state_to_inds, list)
+        assert len(sorted_state_names) == len(indices_by_state)
+
+        splitter = sklearn.model_selection.KFold(n_splits=5, shuffle=True, random_state=rng.randint(1, 2**32 - 1))
+
+        if repetition_id < len(all_res["after_macro_f1"]) // 5:
+            print(f"Skipped {repetition_id=}.")
+            continue
+
+        for inds_train_aux, inds_test_aux in splitter.split(range(m)):
+            inds_train = list(
+                itertools.chain(*[inds_orig[inds_train_aux].tolist() for (_, inds_orig) in undersampled_state_to_inds])
+            )
+            inds_test = list(
+                itertools.chain(*[inds_orig[inds_test_aux].tolist() for (_, inds_orig) in undersampled_state_to_inds])
+            )
+
+            test_group_ids = list(itertools.chain(*[len(inds_test_aux) * [i] for i in range(len(indices_by_state))]))
+
+            assert len(inds_train) == len(set(inds_train))
+            assert len(inds_test) == len(set(inds_test))
+            assert set(inds_test).isdisjoint(inds_train)
+            assert len(inds_test) == len(test_group_ids)
+
+            split_train = dt.sele
