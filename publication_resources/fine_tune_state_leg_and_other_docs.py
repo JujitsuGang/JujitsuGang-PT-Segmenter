@@ -209,4 +209,96 @@ def kfold_with_undersampling(dt, indices_by_state):
             assert set(inds_test).isdisjoint(inds_train)
             assert len(inds_test) == len(test_group_ids)
 
-            split_train = dt.sele
+            split_train = dt.select(inds_train)
+            split_test = dt.select(inds_test).to_dict()
+            (split_test_flatten, test_group_ids) = utils.flatten_dict(split_test, group_ids=test_group_ids)
+            test_labels = np.asarray(split_test_flatten.pop("labels"))
+
+            assert len(test_group_ids) == len(test_labels)
+            assert len(split_train["input_ids"]) >= len(split_test["input_ids"]), (len(split_train), len(split_test))
+            assert len(split_test["labels"]) == len(inds_test_aux) * len(indices_by_state)
+
+            seg_model = segmentador.BERTSegmenter(uri_model="4_layer_6000_vocab_size_bert_v2", device="cuda:0")
+
+            with torch.no_grad():
+                seg_model.eval()
+                test_logits_orig = seg_model(split_test_flatten, **test_inference_kwargs).logits
+
+            compute_metrics_(
+                labels=test_labels,
+                logits=test_logits_orig,
+                sorted_state_names=sorted_state_names,
+                group_ids=test_group_ids,
+                prefix="before_",
+                all_res=all_res,
+            )
+
+            finetuned_segmenter = utils.train(segmenter_name=seg_model, split_train=split_train, pbar=pbar)
+            with torch.no_grad():
+                seg_model.eval()
+                test_logits = finetuned_segmenter(split_test_flatten, **test_inference_kwargs).logits
+
+            compute_metrics_(
+                labels=test_labels,
+                logits=test_logits,
+                sorted_state_names=sorted_state_names,
+                group_ids=test_group_ids,
+                prefix="after_",
+                all_res=all_res,
+            )
+
+        with open(output_name, "w", encoding="utf-8") as f_out:
+            json.dump(all_res, f_out)
+
+
+def kfold(dt, random_init: bool = False):
+    rng = np.random.RandomState(148521)
+    output_dir = "results/state_legislation_finetuning/second_experiment__all_extra_data"
+
+    if random_init:
+        output_name = "test_results_state_leg_all_data_random_init.json"
+    else:
+        output_name = "test_results_state_leg_all_data.json"
+
+    output_name = os.path.join(output_dir, output_name)
+    print(output_name)
+
+    all_res = collections.defaultdict(list)
+
+    if os.path.exists(output_name):
+        with open(output_name, "r", encoding="utf-8") as f_in:
+            all_res.update(json.load(f_in))
+
+        assert all_res
+
+    test_inference_kwargs = {
+        "return_logits": True,
+        "show_progress_bar": True,
+        "window_shift_size": 1.0,
+        "moving_window_size": 1024,
+        "apply_postprocessing": False,
+        "batch_size": 16,
+    }
+
+    def compute_metrics_(labels, logits, prefix: str, all_res: dict[str, list[float]]) -> None:
+        assert len(labels) == len(logits), (len(labels), len(logits))
+        metrics_micro = utils.fn_compute_metrics(labels=labels, logits=logits)
+        for l, v in metrics_micro.items():
+            all_res[f"{prefix}{l}"].append(v)
+
+    n_splits = 5
+    splitter = sklearn.model_selection.KFold(n_splits=n_splits, shuffle=True, random_state=rng.randint(1, 2**32 - 1))
+    pbar = tqdm.tqdm(splitter.split(dt), total=n_splits)
+
+    for inds_train, inds_test in pbar:
+        assert len(inds_train) == len(set(inds_train))
+        assert len(inds_test) == len(set(inds_test))
+        assert set(inds_test).isdisjoint(inds_train)
+
+        split_train = dt.select(inds_train)
+        split_test = dt.select(inds_test).to_dict()
+
+        split_test_flatten = utils.flatten_dict(split_test)
+        test_labels = np.asarray(split_test_flatten.pop("labels"))
+
+        seg_m
