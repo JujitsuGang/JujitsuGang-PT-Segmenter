@@ -301,4 +301,47 @@ def kfold(dt, random_init: bool = False):
         split_test_flatten = utils.flatten_dict(split_test)
         test_labels = np.asarray(split_test_flatten.pop("labels"))
 
-        seg_m
+        seg_model = segmentador.BERTSegmenter(
+            uri_model="4_layer_6000_vocab_size_bert_v2",
+            device="cuda:0",
+            init_from_pretrained_weights=not random_init,
+        )
+
+        with torch.no_grad():
+            seg_model.eval()
+            test_logits_orig = seg_model(split_test_flatten, **test_inference_kwargs).logits
+
+        compute_metrics_(
+            labels=test_labels,
+            logits=test_logits_orig,
+            prefix="before_",
+            all_res=all_res,
+        )
+
+        finetuned_segmenter = utils.train(segmenter_name=seg_model, split_train=split_train, pbar=pbar, n_epochs=5)
+
+        with torch.no_grad():
+            seg_model.eval()
+            test_logits = finetuned_segmenter(split_test_flatten, **test_inference_kwargs).logits
+
+        compute_metrics_(
+            labels=test_labels,
+            logits=test_logits,
+            prefix="after_",
+            all_res=all_res,
+        )
+
+        with open(output_name, "w", encoding="utf-8") as f_out:
+            json.dump(all_res, f_out)
+
+
+def run():
+    dt, indices_by_state = load()
+    check_misclass_quantiles(dt, indices_by_state)
+    kfold_with_undersampling(dt, indices_by_state)
+    kfold(dt)
+    kfold(dt, random_init=True)
+
+
+if __name__ == "__main__":
+    run()
