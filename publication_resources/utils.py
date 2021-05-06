@@ -130,3 +130,68 @@ def train(
     n_epochs: int = 15,
 ):
     if isinstance(segmenter_name, str):
+        seg_model = segmentador.BERTSegmenter(
+            uri_model=segmenter_name,
+            device="cuda:0",
+            init_from_pretrained_weights=not random_init,
+        )
+    else:
+        seg_model = segmenter_name
+
+    n = len(split_train["labels"])
+
+    if n == 0:
+        return seg_model
+
+    model = seg_model.model
+
+    loss_fn = torch.nn.CrossEntropyLoss(ignore_index=-100, reduction="sum")
+    optim = torch.optim.Adam(model.parameters(), lr=1e-4)
+    lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optim, gamma=0.80)
+
+    m = min(1024, max(len(x) for x in split_train["labels"]))
+
+    if not isinstance(split_train, datasets.Dataset):
+        split_train = datasets.Dataset.from_dict(split_train)
+
+    split_train = split_train.map(functools.partial(fn_pad_and_truncate, max_length=m))
+    split_train.set_format("torch")
+
+    true_batch_size = 10
+    grad_acc_its = true_batch_size // 2
+    dl_train = torch.utils.data.DataLoader(split_train, shuffle=True, batch_size=2, drop_last=False)
+
+    model.train()
+
+    for _ in range(n_epochs):
+        mov_loss = None
+        optim.zero_grad()
+
+        for j, batch in enumerate(dl_train, 1):
+            batch = {k: v.to("cuda:0") for k, v in batch.items()}
+            y_true = batch.pop("labels").view(-1)
+
+            output = model(**batch)
+            logits = output["logits"].view(-1, 4)
+
+            assert logits.shape[0] == y_true.numel(), (logits.shape, y_true.shape)
+
+            loss = loss_fn(logits, y_true)
+            loss = loss / true_batch_size
+            loss.backward()
+
+            loss_val = float(loss.detach().item())
+            mov_loss = 0.95 * mov_loss + 0.05 * loss_val if mov_loss is not None else loss_val
+
+            if j % grad_acc_its == 0:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                optim.step()
+                optim.zero_grad()
+
+        pbar.set_description(f"{mov_loss = :.6f}")
+        lr_scheduler.step()
+
+    model.eval()
+    seg_model._model = model
+
+    return seg_model
