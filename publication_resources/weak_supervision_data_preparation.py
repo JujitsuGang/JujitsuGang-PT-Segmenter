@@ -1460,3 +1460,785 @@ RE_SPECIAL = (
         lambda symb, deb: (
             f" {symb} {deb} " + MARKER_INTENDED_CORRUPTION + r"\1" + MARKER_INTENDED_CORRUPTION + r",\2" + f" {symb} {deb} "
         ),
+        None,
+    ),
+    (
+        regex.compile(  # 25
+            r"((?:REQUERIMENTO|SOLICITA[CÇ][AÃ]O)\s*DE\s*INFORMA[CÇ](?:[OÕ\u0303]ES|[AÃ]O)"
+            + ALL_BUT_NEWSEG
+            + r"{,10}?"
+            + DATE_AND_ID
+            + f"(?:{DEPT_EXTENSION})?"
+            + r"\s*)"
+            + r"("
+            + ALL_BUT_NEWSEG
+            + r"{,1000}?)"
+            + r"([ÀÁA]\s*sua\s*excel[eê]ncia"
+            + ALL_BUT_NEWSEG
+            + r"{,100}?)"
+            + r"(?=(?:"
+            + REQUEST_PRESIDENT_OR_MINISTRY
+            + "[,\s]*)?(?:Requeiro|Solicito))",
+            regex.IGNORECASE,
+        ),
+        fn_lambda_triple,
+        1,
+    ),
+    (
+        regex.compile(r"(Autora?\s*:\s*" + ALL_BUT_NEWSEG + r"{,200}?)(\s*Relatora?\s*:)", regex.IGNORECASE),  # 26
+        lambda symb, deb: f" {symb} {deb} " + r"\1" + f" {symb} {deb} " + r"\2",
+        None,
+    ),
+    (
+        regex.compile(  # 27
+            r"(?<=(?:Relatora?|Autora?)\s*:" + ALL_BUT_NEWSEG + r"{,200}?\s+)(" + VALID_ROMAN_NUM + r"[-–\s]+RELAT[OÓ]RIO\s+)",
+            regex.IGNORECASE,
+        ),
+        lambda symb, deb: f" {symb} {deb} " + r"\1",
+        None,
+    ),
+    (AgreementList, lambda symb, deb: f" {symb} {deb} " + r"\1", None),  # 28
+    (
+        regex.compile(  # 29
+            r"(?=Reiterando\s*os\s*votos\s*de\s*apre[cç]o\s*e\s*considera[cç][aã]o)",
+            regex.IGNORECASE,
+        ),
+        lambda symb, deb: f" {symb} {deb} ",
+        None,
+    ),
+    (
+        regex.compile(  # 30
+            r"(?<=\s|^)(\s*(?:(?:Tel(?:efone)?s?|Fones?|Fax(?:es)?)[\.\s:]*)\s*)?"
+            + r"(?:([^0-9a-z"
+            + MARKER_VALID
+            + r"]?)(\s*(?:0xx)?[0-9]{2,}\s*)([^0-9a-z"
+            + MARKER_VALID
+            + r"]?))?"
+            + r"(\s*[0-9]{4,}\s*[-–\.\s]?)(\s*[0-9]{4,})"
+            + r"((?:\s*/\s*[0-9]{4}\s*)*)",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: (
+            f" {symb_start} {deb} "
+            + r"\1\2"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\3\4"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\5"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\6"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\7"
+            + f" {symb_end} {deb} "
+        ),
+        None,
+    ),
+    (
+        regex.compile(  # 31
+            r"("
+            + r"(?:DESPACHO\s*:\s*|\(\s*)?"
+            + f"\s*[AÃÁÀ]S\s*{COMMISSIONS}\s*"
+            + r"\(\s*"
+            + r")"
+            + r"(ART(?:IGO)?[\s\.]+)"
+            + r"([0-9]+.{,60}?\))"
+            + r"(.{,20}?\))?"
+            + r"(?=.{,150}$)",
+            regex.IGNORECASE,
+        ),
+        lambda symb, deb: (
+            f" {symb} {deb} "
+            + r"\1"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\2"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\3"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\4"
+            + f" {symb} {deb} "
+        ),
+        None,
+    ),
+    (
+        regex.compile(  # 32
+            PRACA_DTP_NEIGHBORS
+            + r"(?P<g_PRACA>.{,6}?"
+            + f"{PRACA_DTP})|(?P<g_PRACA>{PRACA_DTP}"
+            + r".{,6}?)"
+            + PRACA_DTP_NEIGHBORS,
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: (
+            f" {symb_start} {deb} "
+            + r"\1"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\2\3\4 "
+            + MARKER_INTENDED_CORRUPTION
+            + r"\5"
+            + f" {symb_end} {deb} "
+        ),
+        None,
+    ),
+    (
+        regex.compile(r"(^\s*[0-9][\s0-9]*|(?<!:[\s0-9_]*)(?:[0-9]+_+)?\s*[0-9][\s0-9]*(?:\.docx?\s*)?$)"),  # 33
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} ",
+        None,
+    ),
+    (
+        regex.compile(f"({CEP}(?<g_cep_sep>[-–\s]*){BRASILIA})", regex.IGNORECASE),  # 34
+        lambda symb_start, symb_end, deb: (
+            f" {symb_start} {deb} "
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_cep_fst>"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_cep_snd>"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_cep_sep>"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_bra_name>"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_bra_df>"
+            + MARKER_INTENDED_CORRUPTION
+            + f" {symb_end} {deb} "
+        ),
+        None,
+    ),
+    (
+        regex.compile(f"{BRASILIA}(?<g_cep_sep>[-–\s]*){CEP}", regex.IGNORECASE),  # 35
+        lambda symb_start, symb_end, deb: (
+            f" {symb_start} {deb} "
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_bra_name>"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_bra_df>"
+            + MARKER_INTENDED_CORRUPTION
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_cep_sep>"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_cep_fst>"
+            + MARKER_INTENDED_CORRUPTION
+            + r"\g<g_cep_snd>"
+            + f" {symb_end} {deb} "
+        ),
+        None,
+    ),
+    (
+        regex.compile(  # 36
+            r"([:;" + QUOTES + r"\?]\s*" + f"{PREFIX_EXTENSIONS}?)" + r"(\s{,10}[-–])" + f"(?!\s*{MARKER_NOISE_START})"
+        ),
+        lambda symb, deb: r"\1" + f" {symb} {deb} " + r"\2",
+        None,
+    ),
+    ####################
+    (
+        regex.compile(  # 37
+            f"(?<={MARKER_NOISE_END}\s*{DEBUG_PATTERN}*\s*)"
+            + r"("
+            + r"(?:(?:web.?|home\.?)?(?:Site|page)|S[ií]tio|Endere[cç]o)s?\s*(?:eletr[oô]nicos?)?[\s:]*"
+            + r"(?:https?://)?"
+            + r"www\.([^\s\."
+            + MARKER_VALID
+            + r"]+\.){1,5}[^\s"
+            + MARKER_VALID
+            + r"]+"
+            + r"(?:[,\s\.]*acess(?:ado|o)\s*em[\s:]*"
+            + DATE_OR_UNDERSCORES
+            + r")?"
+            + r")",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} ",
+        None,
+    ),
+    (
+        regex.compile(  # 38
+            f"(?<={MARKER_NOISE_END}\s*{DEBUG_PATTERN}*\s*|"
+            + r"\(\s*(?:NR|AC|JW|\.{3})\s*\)\s*)"
+            + r"([0-9]+)(?=\s*(?:Art|§|Par[aá]grafo|(?:Sub)?se[cç][aã]o))",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} ",
+        None,
+    ),
+    (
+        regex.compile(  # 39
+            f"(?<={MARKER_NOISE_END}\s*{DEBUG_PATTERN}*)"
+            + r"(\s*)([^\s"
+            + MARKER_VALID
+            + UPPERCASE_LETTERS
+            + r"])((?:\s|\2)*)(\s*)"
+            + f"(?={MARKER_NOISE_START}\s*{DEBUG_PATTERN}*)",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1\2\3\4" + f" {symb_end} {deb} ",
+        None,
+    ),
+)
+
+RE_PRE_POST_BLOCKS = tuple(
+    regex.compile(
+        f"{pattern}" + f"(\s*{MARKER_NOISE_START}{ALL_BUT_NEWSEG}*{MARKER_NOISE_END}\s*{DEBUG_PATTERN}*)?",
+        reg_flags,
+    )
+    for pattern, reg_flags in [
+        (  # 0
+            r"(ACORDO\s*DE\s*[-," + UPPERCASE_LETTERS_OR_NUM + r"\s]+)(?=(?:[OA]\s+)?[" + UPPERCASE_LETTERS + r"][a-z])",
+            0,
+        ),
+        (r"(?<!\(" + ALL_BUT_NEWSEG + r"{,50}?)(" + COMMISSIONS + ")", 0),  # 1
+        (  # 2
+            r"(\sO\s*Congresso\s*Nacional\s*"
+            + ALL_BUT_NEWSEG
+            + r"{,250}?\s*"
+            + r"\s*(?:decreta|promulga)\s*"
+            + ALL_BUT_NEWSEG
+            + r"{,40}?\s*:)",
+            regex.IGNORECASE,
+        ),
+        (  # 3
+            r"(\sA\s*C[aâ]mara\s*dos\s+deputados\s*"
+            + ALL_BUT_NEWSEG
+            + r"{,250}?\s*"
+            + r"\s*(?:decreta|promulga)\s*"
+            + ALL_BUT_NEWSEG
+            + r"{,40}?\s*:)",
+            regex.IGNORECASE,
+        ),
+        (  # 4
+            r"((?:SUBSTITUTIVO\s*AO\s*)?"
+            + r"Projeto\s*de\s*Lei\s*"
+            + r"(?:\s*COMPLEMENTAR\s*|\s*DA\s*C[AÂ]MARA\s*|\s*DE\s*CONVERS[AÃ]O\s*)*\s*"
+            + f"(?:{DATE_AND_ID})?"
+            + r"\s*"
+            + DEPT_EXTENSION
+            + r")",
+            regex.IGNORECASE,
+        ),
+        (  # 5
+            r"((?:SUBSTITUTIVO\s*AO\s*)?Projeto\s*de\s*Decreto\s*Legislativo\s*"
+            + DATE_AND_ID
+            + f"(?:{DEPT_EXTENSION})?"
+            + r")",
+            regex.IGNORECASE,
+        ),
+        (  # 5
+            r"((?:SUBSTITUTIVO\s*AO\s*)?Projeto\s*de\s*Resolu[cç][aã]o\s*" + f"(?:{DEPT_EXTENSION}|{DATE_AND_ID})" + r")",
+            regex.IGNORECASE,
+        ),
+        (  # 6
+            r"(?<=^[^\(]{,500}?)(Mensagem\s*" + DATE_AND_ID + r"\s*[0-9][0-9\s]*)",
+            regex.IGNORECASE,
+        ),
+        (  # 7
+            r"((?:SUBSTITUTIV[AO]\s*[ÁÀA]\s*)?"
+            + r"Proposta\s*de\s*emenda\s*(?:cons?titucional|[aàá]\s*constitui[çc][ãa]o).*?"
+            + f"(?:{DEPT_EXTENSION})"
+            + r")",
+            regex.IGNORECASE,
+        ),
+        *[  # 8, 9, 10
+            (
+                r"("
+                + f"{LARGER_BLOCKS_HIERARCHY[i]}"
+                + r"\s*"
+                + f"(?:{VALID_ROMAN_NUM}|[0-9]+)"
+                + r"(?:[-–\.\s,"
+                + UPPERCASE_LETTERS_OR_NUM
+                + r"])+?"
+                + r"(?:\s*"
+                + MARKER_NOISE_START
+                + r""
+                + ALL_BUT_NEWSEG
+                + r"{,800}?"
+                + MARKER_NOISE_END
+                + r"\s*"
+                + f"{DEBUG_PATTERN}*"
+                + r"\s*)?"
+                + f"(?={MARKER_VALID}|"
+                + r"|".join(LARGER_BLOCKS_HIERARCHY[i + 1 :])
+                + r")"
+                + r")",
+                regex.IGNORECASE,
+            )
+            for i in range(len(LARGER_BLOCKS_HIERARCHY) - 1)
+        ],
+        (  # 11, Esta lei entra em vigor cento e oitenta dias após a data de sua publicação
+            r"(Art"
+            + ALL_BUT_NEWSEG
+            + r"{,10}?Est[áàãa]\s*"
+            + r"(?:lei|EC|Emenda\s*(?:Constitucional|[àaá\s]*constitui[cç][aã]o)|resolu[cç][aã]o)\s*"
+            + r"entr[ea]\s*em\s*vigor\s*"
+            + ALL_BUT_NEWSEG
+            + r"{,100}?\s*(?:data\s*de\s*)sua\s*publica[cç][aã]o\s*(?:\.|$))",
+            regex.IGNORECASE,
+        ),
+        (r"(APRECIA[CÇ][AÃ]O\s*:" + ALL_BUT_NEWSEG + r"{,100})$", 0),
+    ]
+)
+
+RE_POST_PROCESSING_BLOCKS = (
+    (
+        PostProcRecurrentNoise,  # 0
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} ",
+    ),
+    (
+        regex.compile(  # 1
+            r"("
+            + f"[^{UPPERCASE_LETTERS_OR_NUM}{MARKER_VALID}]"
+            + r"[0-9]"
+            + r"[\]\)\s]+"
+            + ALL_BUT_NEWSEG
+            + r"{,120}?"
+            + SOURCE_URL
+            + r")",
+            regex.IGNORECASE | regex.REVERSE,
+        ),
+        lambda symb_start, symb_end, deb: (f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} "),
+    ),
+    (
+        regex.compile(  # 2
+            r"(?<="
+            r"(?:^\s*(?!.{,20}C[ÂA]MARA).{,20}?\s*|"
+            + f"{MARKER_NOISE_END}\s*{DEBUG_PATTERN}*)"
+            + r"\s*"
+            + r")"
+            + r"("
+            + f"(?:Gabinete\s*d[oa]|^\s*|(?<={MARKER_NOISE_END}\s*{DEBUG_PATTERN}*))"
+            + r"\s*deputad[oa]\s*(?:federal)?\s*"
+            + f"{ALL_BUT_NEWSEG}"
+            + r"{,200}?"
+            + r")"
+            + f"(?={MARKER_VALID}|{MARKER_NOISE_START})",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: (f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} "),
+    ),
+    (
+        regex.compile(  # 3
+            f"({MARKER_VALID}\s*{DEBUG_PATTERN}*)(\s*)"
+            + f"(\s+[{UPPERCASE_LETTERS_OR_NUM}]"
+            + r"{1,3}\s+)"
+            + f"(?=\s*{MARKER_VALID}|\s*$)",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: (f" {symb_start} {deb} " + r"\3\2" + f" {symb_end} {deb} " + r"\1"),
+    ),
+    (
+        regex.compile(  # 4
+            f"(?<={MARKER_NOISE_END}\s*{DEBUG_PATTERN}*)"
+            + r"("
+            + ALL_BUT_NEWSEG
+            + r"{,10}?\s*C[AÂ]MARA\s*DOS\s*DEPUTADOS\s*"
+            + ALL_BUT_NEWSEG
+            + r"{,10}?)"
+            + f"(?={MARKER_VALID}|{MARKER_NOISE_START})",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: (f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} "),
+    ),
+    (
+        regex.compile(  # 5
+            f"(?<="
+            + r"^\s*|"
+            + r"(?:"
+            + f"(?:^|{MARKER_VALID})\s*{DEBUG_PATTERN}*\s*{ALL_BUT_NEWSEG}"
+            + r"{30,}?"
+            + r"|"
+            + f"{MARKER_NOISE_START}\s*{DEBUG_PATTERN}*\s*{ALL_BUT_NEWSEG}"
+            + r"{60,}?"
+            + f")"
+            + f"{MARKER_NOISE_END}\s*{DEBUG_PATTERN}*\s*"
+            + r")"
+            + r"([^"
+            + MARKER_VALID
+            + MARKER_NOISE_START[0]
+            + MARKER_NOISE_END[0]
+            + r"]{1,90})"
+            f"(?="
+            + r"\s*$|"
+            + f"\s*{MARKER_NOISE_START}\s*{DEBUG_PATTERN}*\s*"
+            + r"(?:"
+            + ALL_BUT_NEWSEG
+            + r"{30,}?"
+            + f"(?:\s*{DEBUG_PATTERN}*\s*$|{MARKER_VALID})|"
+            + ALL_BUT_NEWSEG
+            + r"{60,}?"
+            + MARKER_NOISE_END
+            + r")"
+            + r")",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: (f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} "),
+    ),
+    (
+        regex.compile(  # 6
+            f"({MARKER_VALID}\s*{DEBUG_PATTERN}*)(\s*)"
+            + f"(\s+[{UPPERCASE_LETTERS_OR_NUM}]"
+            + r"{1,3}\s+)"
+            + f"({MARKER_NOISE_START}{ALL_BUT_NEWSEG}*{MARKER_NOISE_END}\s*{DEBUG_PATTERN}*)"
+            f"(?=\s*{MARKER_VALID}|\s*$)",
+            regex.IGNORECASE,
+        ),
+        lambda symb_start, symb_end, deb: (f" {symb_start} {deb} " + r"\3\2" + f" {symb_end} {deb} " + r"\4\1"),
+    ),
+    (
+        regex.compile(f"(?<={MARKER_NOISE_END}\s*{DEBUG_PATTERN}*\s*)" + r"([0-9])" + r"(?=\s)(?!\s*[-–\)\.])"),  # 7
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} ",
+    ),
+    (
+        regex.compile(r"(?<=[\.;,:…" + QUOTES + "]\s*)" + r"([0-9]+\s*)" + f"(?={MARKER_NOISE_START})"),  # 8
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} ",
+    ),
+)
+
+RE_HIGH_PRIORITY_BLOCKS = (
+    (
+        DetectRecurrentMetadata,  # 0, Sala das Sessões , em 28 de abril de 2020
+        lambda symb_start, symb_end, deb: f" {symb_start} {deb} " + r"\1" + f" {symb_end} {deb} ",
+    ),
+    *[
+        (
+            regex.compile(f"(?<={STANDARD_PREFIXES}{PREFIX_EXTENSIONS}?)(?=\s*{pattern})", regex.IGNORECASE),
+            lambda symb, deb: f" {symb} {deb} ",
+        )
+        for pattern in [
+            r"Sala\s*d[ea]s?\s*(?:sess|comiss|reuni)(?:[õôo\u0303]+es|[ãa]o)\s*" + EOF_OR_DATE,
+            r"Senado\s*Federal\s*,\s*" + EOF_OR_DATE,
+            r"C[aâ]mara\s*dos\s*Deputados\s*,\s*" + EOF_OR_DATE,
+            r"Bras[ií]lia\s*,\s*(?:" + DATE_OR_UNDERSCORES + r")\s*",
+            r"(?:Atenciosamente|Respeitosam?ente)\s*,",
+            r"\sAs?\s*mesas?\s*da\s*c[aâ]mara\s*dos\s*deputados\s*[^:" + MARKER_VALID + r"]{,300}?:",
+        ]
+    ],
+)
+
+
+RE_POST_BLOCKS = tuple(regex.compile(f"(?<={pattern})", regex.IGNORECASE) for pattern in [])
+COALESCE_NOISE = regex.compile(f"{MARKER_NOISE_END}\s*{DEBUG_PATTERN}*\s*{MARKER_NOISE_START}\s*{DEBUG_PATTERN}*")
+
+
+def regex_legal_item_anymatch(text: str, debug: bool = False, coalesce_noise: bool = True) -> str:
+    aid = 0
+
+    for i, (reg, fun) in enumerate(RE_HIGH_PRIORITY_BLOCKS, aid):
+        debug_text = f"{i}_HIGH_PTY" if debug else ""
+        try:
+            pat = fun(MARKER_VALID, debug_text)
+
+        except TypeError:
+            pat = fun(MARKER_NOISE_START, MARKER_NOISE_END, debug_text)
+
+        text = reg.sub(pat, text, concurrent=False)
+
+    for i, reg in enumerate(RE_NOISE_BLOCKS, aid):
+        debug_text = f"{i}_NOISE" if debug else ""
+        text = reg.sub(
+            f" {MARKER_NOISE_START} {debug_text} " + r"\1" + f" {MARKER_NOISE_END} {debug_text} ",
+            text,
+            concurrent=False,
+        )
+
+    for i, (reg, fun, sub_count) in enumerate(RE_SPECIAL, aid):
+        debug_text = f"{i}_SPECIAL" if debug else ""
+        try:
+            pat = fun(MARKER_VALID, debug_text)
+
+        except TypeError:
+            pat = fun(MARKER_NOISE_START, MARKER_NOISE_END, debug_text)
+
+        text = reg.sub(pat, text, concurrent=False, count=sub_count or 0)
+
+    if coalesce_noise:
+        text = COALESCE_NOISE.sub("", text)
+
+    for i, reg in enumerate(RE_PRE_BLOCKS, aid):
+        debug_text = f"{i}_PRE" if debug else ""
+        text = reg.sub(f" {MARKER_VALID} {debug_text} ", text, concurrent=False)
+
+    for i, reg in enumerate(RE_POST_BLOCKS, aid):
+        debug_text = f"{i}_POS" if debug else ""
+        text = reg.sub(f" {MARKER_VALID} {debug_text} ", text, concurrent=False)
+
+    for i, reg in enumerate(RE_PRE_POST_BLOCKS, aid):
+        debug_text = f"{i}_PRE_POS" if debug else ""
+        text = reg.sub(
+            f" {MARKER_VALID} {debug_text} " + r"\1\2" + f" {MARKER_VALID} {debug_text} ",
+            text,
+            concurrent=True,
+        )
+
+    if coalesce_noise:
+        text = COALESCE_NOISE.sub("", text)
+
+    post_sub_changed = False
+
+    for i, (reg, fun) in enumerate(RE_POST_PROCESSING_BLOCKS, aid):
+        debug_text = f"{i}_POST_PROC" if debug else ""
+        try:
+            pat = fun(MARKER_VALID, debug_text)
+
+        except TypeError:
+            pat = fun(MARKER_NOISE_START, MARKER_NOISE_END, debug_text)
+
+        text, post_sub_count = reg.subn(pat, text, concurrent=False)
+        post_sub_changed = post_sub_changed or bool(post_sub_count > 0)
+
+    if post_sub_changed:
+        if coalesce_noise:
+            text = COALESCE_NOISE.sub("", text)
+
+        for i, reg in enumerate(RE_PRE_BLOCKS, aid):
+            debug_text = f"{i}_LATE_PRE" if debug else ""
+            text = reg.sub(f" {MARKER_VALID} {debug_text} ", text, concurrent=False)
+
+    return text
+
+
+def preprocess_instance(
+    item,
+    ind: int,
+    print_preprocessed: bool = False,
+    debug: bool = False,
+    coalesce_noise: bool = True,
+):
+    preprocessed_text = seg_model.preprocess_legal_text(item["text"])
+    preprocessed_text = regex_legal_item_anymatch(preprocessed_text, debug=debug, coalesce_noise=coalesce_noise)
+    preprocessed_text = preprocessed_text.replace(MARKER_INTENDED_CORRUPTION, "@" if debug else "")
+    tokens = nltk.tokenize.word_tokenize(preprocessed_text, language="portuguese")
+
+    if print_preprocessed:
+        print(
+            colorama.Fore.WHITE,
+            colorama.Style.DIM,
+            preprocessed_text,
+            colorama.Style.RESET_ALL,
+            sep="",
+        )
+
+    labels = [0] * len(tokens)
+
+    i = 0
+    while i < len(tokens) - 1:
+        if tokens[i] in SPECIAL_SYMBOLS:
+            cur_token = tokens.pop(i)
+            cur_label = labels.pop(i)
+
+            if cur_label == SPECIAL_SYMBOLS[MARKER_VALID] and cur_token == MARKER_NOISE_START:
+                labels[i] = SPECIAL_SYMBOLS[MARKER_VALID]
+                if i + 1 < len(tokens) and tokens[i + 1] != MARKER_NOISE_END:
+                    labels[i + 1] = SPECIAL_SYMBOLS[MARKER_NOISE_START]
+                continue
+
+            if cur_label == SPECIAL_SYMBOLS[MARKER_VALID] and cur_token == MARKER_NOISE_END:
+                labels[i] = SPECIAL_SYMBOLS[MARKER_VALID]
+                if i > 0 and labels[i - 1] != SPECIAL_SYMBOLS[MARKER_NOISE_START]:
+                    labels[i - 1] = SPECIAL_SYMBOLS[MARKER_NOISE_END]
+                continue
+
+            if cur_label == SPECIAL_SYMBOLS[MARKER_NOISE_START] and cur_token == MARKER_VALID:
+                labels[i] = SPECIAL_SYMBOLS[MARKER_VALID]
+                if i + 1 < len(tokens) and tokens[i + 1] != MARKER_NOISE_END:
+                    labels[i + 1] = SPECIAL_SYMBOLS[MARKER_NOISE_END]
+                continue
+
+            if cur_label == SPECIAL_SYMBOLS[MARKER_NOISE_END] and cur_token == MARKER_VALID:
+                labels[i] = SPECIAL_SYMBOLS[MARKER_VALID]
+                if i > 0 and labels[i - 1] != SPECIAL_SYMBOLS[MARKER_NOISE_START]:
+                    labels[i - 1] = SPECIAL_SYMBOLS[MARKER_NOISE_END]
+                continue
+
+            if cur_label == SPECIAL_SYMBOLS[MARKER_NOISE_START] and cur_token == MARKER_NOISE_END:
+                continue
+
+            if cur_label == SPECIAL_SYMBOLS[MARKER_NOISE_END] and cur_token == MARKER_NOISE_START:
+                labels[i] = 0
+                continue
+
+            labels[i] = SPECIAL_SYMBOLS[cur_token]
+            continue
+
+        i += 1
+
+    if labels:
+        maybe_erase_pool = []
+        noise_on = False
+
+        for i in range(len(labels) - 1):
+            if labels[i] == SPECIAL_SYMBOLS[MARKER_NOISE_END] and labels[i + 1] == SPECIAL_SYMBOLS[MARKER_NOISE_START]:
+                labels[i] = labels[i + 1] = 0
+
+        for i in range(len(labels)):
+            if labels[i] == SPECIAL_SYMBOLS[MARKER_NOISE_START]:
+                maybe_erase_pool.clear()
+                continue
+
+            if labels[i] == SPECIAL_SYMBOLS[MARKER_NOISE_END]:
+                while maybe_erase_pool:
+                    ind = maybe_erase_pool.pop()
+                    labels[ind] = 0
+
+            if labels[i] > 0:
+                maybe_erase_pool.append(i)
+
+        for i in range(len(labels)):
+            if labels[i] == SPECIAL_SYMBOLS[MARKER_NOISE_START]:
+                if noise_on:
+                    labels[i] = 0
+                else:
+                    noise_on = True
+
+            elif labels[i] == SPECIAL_SYMBOLS[MARKER_NOISE_END]:
+                if noise_on:
+                    noise_on = False
+                else:
+                    labels[i] = 0
+
+            elif labels[i] == SPECIAL_SYMBOLS[MARKER_VALID]:
+                noise_on = False
+
+        for i in range(len(labels) - 1):
+            if labels[i] == SPECIAL_SYMBOLS[MARKER_NOISE_END] and labels[i + 1] == SPECIAL_SYMBOLS[MARKER_VALID]:
+                labels[i] = 0
+
+        while tokens and tokens[0] in SPECIAL_SYMBOLS:
+            labels.pop(0)
+            tokens.pop(0)
+
+        while tokens and tokens[-1] in SPECIAL_SYMBOLS:
+            labels.pop()
+            tokens.pop()
+
+        if labels[0] == SPECIAL_SYMBOLS[MARKER_VALID]:
+            labels[0] = 0
+
+    ret = {
+        "labels": labels,
+        "tokens": tokens,
+        "id": str(ind),
+    }
+
+    return ret
+
+
+def load_raw_data():
+    # Data info + download link: https://github.com/ulysses-camara/ulysses-segmenter?tab=readme-ov-file#train-and-evaluation-data
+    df = datasets.load_dataset(
+        "csv",
+        data_files=["data/ulysses_segmenter_raw_data.txt"],
+        header=None,
+        names=["text"],
+    )
+
+    RE_JUSTIFICATIVA = regex.compile(
+        r"\s*(?:"
+        + r"J\s*U\s*S\s*T\s*I\s*F\s*I\s*C\s*A?\s*T\s*I\s*[CV]\s*A|"
+        + r"J\s*u\s*s\s*t\s*i\s*f\s*i\s*c\s*a\s*t\s*i\s*v\s*a\s+(?=["
+        + UPPERCASE_LETTERS
+        + r"])|"
+        + r"J\s*U\s*S\s*T\s*I\s*F\s*I\s*C\s*A\s*[CÇ]\s*[AÂÃÀÁ]\s*O|"
+        + r"J\s*u\s*s\s*t\s*i\s*f\s*i\s*c\s*a\s*[cç]\s*[aãâàá]\s*o\s+(?=["
+        + UPPERCASE_LETTERS
+        + r"])"
+        + r")"
+    )
+
+    RE_ANEXO = regex.compile(r"\s*A\s*N\s*E\s*X\s*O")
+
+    df = df.filter(lambda item: isinstance(item["text"], str) and 128 <= len(item["text"]) <= 600000)
+    df = df.map(lambda item: {"text": RE_JUSTIFICATIVA.split(item["text"])[0]})
+    df = df.map(lambda item: {"text": RE_ANEXO.split(item["text"])[0]})
+
+    df = df.map(preprocess_instance, with_indices=True, num_proc=10, remove_columns="text")
+
+    return df
+
+
+def tokenize_and_align_labels(examples, max_tokens_per_inst: int = 700):
+    new_examples = []
+    new_labels = []
+
+    for inst_tokens, inst_labels in zip(examples["tokens"], examples["labels"]):
+        propagate_noise_start_to_next_slice = False
+
+        for j in range(0, len(inst_tokens), max_tokens_per_inst):
+            slice_tokens = inst_tokens[j : j + max_tokens_per_inst]
+            slice_labels = inst_labels[j : j + max_tokens_per_inst]
+
+            if propagate_noise_start_to_next_slice:
+                if slice_labels[0] == 0:
+                    slice_labels[0] = SPECIAL_SYMBOLS[MARKER_NOISE_START]
+
+                propagate_noise_start_to_next_slice = False
+
+            cur_special_tokens = np.flatnonzero(slice_labels)
+
+            if cur_special_tokens.size and cur_special_tokens[-1] == SPECIAL_SYMBOLS[MARKER_NOISE_START]:
+                propagate_noise_start_to_next_slice = True
+
+            new_examples.append(slice_tokens)
+            new_labels.append(slice_labels)
+
+    # source: https://huggingface.co/docs/transformers/custom_datasets#preprocess
+    tokenized_inputs = seg_model.tokenizer(
+        new_examples,
+        truncation=True,
+        max_length=1024,
+        is_split_into_words=True,
+    )
+
+    labels = []
+
+    for i, label in enumerate(new_labels):
+        word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+        previous_word_idx = None
+        label_ids = []
+        for word_idx in word_ids:  # Set the special tokens to -100.
+            if word_idx is None:
+                label_ids.append(-100)
+            elif word_idx != previous_word_idx:  # Only label the first token of a given word.
+                label_ids.append(label[word_idx])
+            else:
+                label_ids.append(-100)
+            previous_word_idx = word_idx
+        labels.append(label_ids)
+
+    tokenized_inputs["labels"] = labels
+
+    return tokenized_inputs
+
+
+def run():
+    df = load_raw_data()
+
+    df_tokenized = df["train"].map(
+        tokenize_and_align_labels,
+        batched=True,
+        num_proc=10,
+        remove_columns=df["train"].column_names,
+    )
+
+    df_tokenized_train_eval_test = df_tokenized.train_test_split(
+        test_size=0.2,
+        shuffle=True,
+        seed=16,
+    )
+
+    df_tokenized_test_eval = df_tokenized_train_eval_test["test"].train_test_split(
+        test_size=0.5,
+        shuffle=False,
+        seed=49,
+    )
+
+    df_tokenized_split = datasets.DatasetDict(
+        {
+            "train": df_tokenized_train_eval_test["train"],
+            "eval": df_tokenized_test_eval["train"],
+            "test": df_tokenized_test_eval["test"],
+        }
+    )
+
+    df_tokenized_split.save_to_disk(f"data/df_tokenized_split_0_120000_{VOCAB_SIZE}")
+
+
+if __name__ == "__main__":
+    run()
