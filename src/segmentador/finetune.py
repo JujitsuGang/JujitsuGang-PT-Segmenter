@@ -262,4 +262,10 @@ def finetune(
                 total_insts += int(batch_inds.numel())
 
             accuracy = 1.0 - total_misclass / total_insts
-            pbar.set_description(
+            pbar.set_description(f"Epoch: {i} of {max_epochs}. Acc.: {100.0 * accuracy:.2f}%")
+
+        if accuracy >= early_stopping_accuracy_threshold:
+            break
+
+    model.eval()
+    return model
