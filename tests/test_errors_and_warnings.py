@@ -115,4 +115,19 @@ def test_repeated_file_uris_in_onnx_quantization_lstm(
         segmentador.optimize.quantize_model(
             model=fixture_model_lstm_1_layer,
             model_output_format="onnx",
-            quantized_model_filename="repeated_
+            quantized_model_filename="repeated_name",
+            intermediary_onnx_model_name="repeated_name",
+        )
+
+
+@pytest.mark.skip(reason="Support for ONNX newer versions has been dropped.")
+def test_repeated_file_uris_in_onnx_quantization_bert(
+    fixture_model_bert_2_layers: segmentador.Segmenter,
+):
+    with pytest.raises(ValueError):
+        segmentador.optimize.quantize_model(
+            model=fixture_model_bert_2_layers,
+            model_output_format="onnx",
+            quantized_model_filename="repeated_name",
+            intermediary_onnx_model_name="repeated_name",
+        )
