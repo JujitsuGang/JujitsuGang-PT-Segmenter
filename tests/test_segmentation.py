@@ -115,4 +115,50 @@ def test_batch_size_with_long_text(
 
 
 @pytest.mark.parametrize("window_shift_size", (1024, 512, 256, 1.0, 0.5, 0.25))
-def test_window_shif
+def test_window_shift_size(
+    fixture_model_bert_2_layers: segmentador.Segmenter,
+    fixture_legal_text_long: str,
+    window_shift_size: int,
+):
+    segs = fixture_model_bert_2_layers(fixture_legal_text_long, window_shift_size=window_shift_size)
+    assert len(segs) >= 50 and no_segmentation_at_middle_subwords(segs)
+
+
+@pytest.mark.parametrize("input_type_fn", [tuple, list, pd.Series])
+def test_input_type(fixture_model_bert_2_layers: segmentador.Segmenter, input_type_fn):
+    with pytest.warns(UserWarning):
+        segs = fixture_model_bert_2_layers(
+            input_type_fn(["Projeto de Lei (do XYZ).", "Artigo 10: abc xyz", "a) 0 abc b) xyz"])
+        )
+
+    assert len(segs) > 0 and no_segmentation_at_middle_subwords(segs)
+
+
+def test_input_type_pandas_df(fixture_model_bert_2_layers: segmentador.Segmenter):
+    with pytest.raises(TypeError):
+        pandas_df = pd.DataFrame.from_dict({"a": ["Artigo 1: abc", "Artigo 2: xyz"]})
+        fixture_model_bert_2_layers(pandas_df)
+
+
+@pytest.mark.parametrize("return_tensors", (None, "pt", "np"))
+def test_input_type_pre_tokenized(
+    fixture_model_bert_2_layers: segmentador.Segmenter,
+    fixture_legal_text_short: str,
+    return_tensors: str,
+):
+    preproc_text = fixture_model_bert_2_layers.preprocess_legal_text(fixture_legal_text_short)
+    tokenized_input = fixture_model_bert_2_layers.tokenizer(
+        preproc_text, return_tensors=return_tensors
+    )
+    segs = fixture_model_bert_2_layers(tokenized_input)
+    assert len(segs) == 9 and no_segmentation_at_middle_subwords(segs)
+
+
+def test_input_type_huggingface_dataset(
+    fixture_model_bert_2_layers: segmentador.Segmenter, fixture_legal_text_short: str
+):
+    preproc_text = fixture_model_bert_2_layers.preprocess_legal_text(fixture_legal_text_short)
+    tokenized_input = fixture_model_bert_2_layers.tokenizer(preproc_text)
+    dataset = datasets.Dataset.from_dict(tokenized_input)
+    segs = fixture_model_bert_2_layers(dataset)
+    assert len(segs) == 9 and no_segmentation_at_middle_subwords(segs)
