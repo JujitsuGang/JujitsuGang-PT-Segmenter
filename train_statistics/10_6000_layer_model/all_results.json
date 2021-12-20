@@ -15,4 +15,9 @@
     "test_per_cls_recall_3": 0.6416833667308951,
     "test_runtime": 474.8131,
     "test_samples_per_second": 30.246,
-    
+    "test_steps_per_second": 3.783,
+    "train_loss": 0.015830485584212253,
+    "train_runtime": 45145.681,
+    "train_samples_per_second": 10.179,
+    "train_steps_per_second": 0.079
+}
