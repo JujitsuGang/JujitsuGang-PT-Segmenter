@@ -66,4 +66,26 @@ Loaded model from (trained_model, ./pretrained_segmenter_model/4_12000_layer_mod
   test_steps_per_second    =      9.188
 Loaded model from (trained_model, ./pretrained_segmenter_model/6_12000_layer_model).
 {'loss': 0.0638, 'learning_rate': 0.0004444100340662744, 'epoch': 0.8}
-{'eval_loss': 0.01997246965765953, 'eval_per_cls_precision_0': 0.9960313740195598, 'eval_per_cls_precision_1': 0.9041159180161304, 'eval_per_cls_
+{'eval_loss': 0.01997246965765953, 'eval_per_cls_precision_0': 0.9960313740195598, 'eval_per_cls_precision_1': 0.9041159180161304, 'eval_per_cls_precision_2': 0.8396720870839408, 'eval_per_cls_precision_3': 0.6590909090695101, 'eval_per_cls_recall_0': 0.9973267921464566, 'eval_per_cls_recall_1': 0.8984192570428234, 'eval_per_cls_recall_2': 0.5712718295688294, 'eval_per_cls_recall_3': 0.08697514995678246, 'eval_macro_precision': 0.8497275720472852, 'eval_macro_recall': 0.638498257178723, 'eval_macro_f1': 0.729122636536222, 'eval_overall_accuracy': 0.993468853440503, 'eval_runtime': 275.7233, 'eval_samples_per_second': 52.085, 'eval_steps_per_second': 6.514, 'epoch': 0.8}
+{'loss': 0.0164, 'learning_rate': 0.00033323010219882314, 'epoch': 1.6}
+{'eval_loss': 0.010136776603758335, 'eval_per_cls_precision_0': 0.9986146008061157, 'eval_per_cls_precision_1': 0.9469800470841768, 'eval_per_cls_precision_2': 0.8484848484840786, 'eval_per_cls_precision_3': 0.8336673346526319, 'eval_per_cls_recall_0': 0.9983120048976539, 'eval_per_cls_recall_1': 0.9711318499520338, 'eval_per_cls_recall_2': 0.855079089329016, 'eval_per_cls_recall_3': 0.17823479005921922, 'eval_macro_precision': 0.9069367077567507, 'eval_macro_recall': 0.7506894335594807, 'eval_macro_f1': 0.8214491583396013, 'eval_overall_accuracy': 0.9969284261255468, 'eval_runtime': 275.7145, 'eval_samples_per_second': 52.086, 'eval_steps_per_second': 6.514, 'epoch': 1.6}
+{'loss': 0.0071, 'learning_rate': 0.00022205017033137195, 'epoch': 2.4}
+{'eval_loss': 0.005078985821455717, 'eval_per_cls_precision_0': 0.9992254752171602, 'eval_per_cls_precision_1': 0.979276979324179, 'eval_per_cls_precision_2': 0.9526475612061561, 'eval_per_cls_precision_3': 0.8334426229453545, 'eval_per_cls_recall_0': 0.9993548565060045, 'eval_per_cls_recall_1': 0.9837651286678079, 'eval_per_cls_recall_2': 0.9178933894112481, 'eval_per_cls_recall_3': 0.5445586975126626, 'eval_macro_precision': 0.9411481596732125, 'eval_macro_recall': 0.8613930180244308, 'eval_macro_f1': 0.8995061629682254, 'eval_overall_accuracy': 0.9985700673024858, 'eval_runtime': 275.6614, 'eval_samples_per_second': 52.097, 'eval_steps_per_second': 6.515, 'epoch': 2.4}
+{'loss': 0.0042, 'learning_rate': 0.00011087023846392072, 'epoch': 3.2}
+{'eval_loss': 0.004028372000902891, 'eval_per_cls_precision_0': 0.9993919785212377, 'eval_per_cls_precision_1': 0.9856083802108514, 'eval_per_cls_precision_2': 0.9527747151773678, 'eval_per_cls_precision_3': 0.8516853932536422, 'eval_per_cls_recall_0': 0.9995045116815415, 'eval_per_cls_recall_1': 0.986076480412799, 'eval_per_cls_recall_2': 0.9481576300622216, 'eval_per_cls_recall_3': 0.6495287060811932, 'eval_macro_precision': 0.9473651167907748, 'eval_macro_recall': 0.8958168320594389, 'eval_macro_f1': 0.9208701437773773, 'eval_overall_accuracy': 0.9988892308418834, 'eval_runtime': 275.6947, 'eval_samples_per_second': 52.09, 'eval_steps_per_second': 6.514, 'epoch': 3.2}
+{'train_runtime': 25457.1085, 'train_samples_per_second': 18.051, 'train_steps_per_second': 0.141, 'train_loss': 0.018858724148111333, 'epoch': 4.0}
+***** all metrics *****
+  epoch                    =        4.0
+  train_loss               =     0.0189
+  train_runtime            = 7:04:17.10
+  train_samples_per_second =     18.051
+  train_steps_per_second   =      0.141
+***** test metrics *****
+  test_loss                =      0.004
+  test_macro_f1            =     0.9237
+  test_macro_precision     =     0.9474
+  test_macro_recall        =     0.9012
+  test_overall_accuracy    =     0.9989
+  test_per_cls_precision_0 =     0.9994
+  test_per_cls_precision_1 =      0.985
+  test_per_cl
