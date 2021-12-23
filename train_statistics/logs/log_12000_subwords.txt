@@ -35,4 +35,35 @@ Loaded model from (trained_model, ./pretrained_segmenter_model/4_12000_layer_mod
 {'loss': 0.0383, 'learning_rate': 0.0004444100340662744, 'epoch': 0.8}
 {'eval_loss': 0.019137060269713402, 'eval_per_cls_precision_0': 0.996565933783334, 'eval_per_cls_precision_1': 0.9053414096915587, 'eval_per_cls_precision_2': 0.7802304296319799, 'eval_per_cls_precision_3': 0.7476635513785774, 'eval_per_cls_recall_0': 0.9971559341056095, 'eval_per_cls_recall_1': 0.9109812954650874, 'eval_per_cls_recall_2': 0.6625217152778069, 'eval_per_cls_recall_3': 0.1028277634957034, 'eval_macro_precision': 0.8574503311213626, 'eval_macro_recall': 0.6683716770860519, 'eval_macro_f1': 0.7511957606993599, 'eval_overall_accuracy': 0.9938274371788104, 'eval_runtime': 195.7913, 'eval_samples_per_second': 73.349, 'eval_steps_per_second': 9.173, 'epoch': 0.8}
 {'loss': 0.0156, 'learning_rate': 0.00033323010219882314, 'epoch': 1.6}
-{'eval_lo
+{'eval_loss': 0.010807856917381287, 'eval_per_cls_precision_0': 0.9985382600496917, 'eval_per_cls_precision_1': 0.943196148995652, 'eval_per_cls_precision_2': 0.8718713900646208, 'eval_per_cls_precision_3': 0.8580645161105792, 'eval_per_cls_recall_0': 0.9982724811098918, 'eval_per_cls_recall_1': 0.9709022978951682, 'eval_per_cls_recall_2': 0.828106427721653, 'eval_per_cls_recall_3': 0.1709511568116069, 'eval_macro_precision': 0.9179175788051359, 'eval_macro_recall': 0.74205809088458, 'eval_macro_f1': 0.8206724646048501, 'eval_overall_accuracy': 0.9968217714757042, 'eval_runtime': 195.7497, 'eval_samples_per_second': 73.364, 'eval_steps_per_second': 9.175, 'epoch': 1.6}
+{'loss': 0.0074, 'learning_rate': 0.00022205017033137195, 'epoch': 2.4}
+{'eval_loss': 0.005235339514911175, 'eval_per_cls_precision_0': 0.9990737772151231, 'eval_per_cls_precision_1': 0.9799263570494533, 'eval_per_cls_precision_2': 0.9633431085034571, 'eval_per_cls_precision_3': 0.8308351177670891, 'eval_per_cls_recall_0': 0.9994209353386694, 'eval_per_cls_recall_1': 0.9795540357625498, 'eval_per_cls_recall_2': 0.9010697631883504, 'eval_per_cls_recall_3': 0.4987146529541615, 'eval_macro_precision': 0.9432945901337806, 'eval_macro_recall': 0.8446898468109327, 'eval_macro_f1': 0.8912732593387289, 'eval_overall_accuracy': 0.9984696158311519, 'eval_runtime': 195.7202, 'eval_samples_per_second': 73.375, 'eval_steps_per_second': 9.176, 'epoch': 2.4}
+{'loss': 0.0041, 'learning_rate': 0.00011087023846392072, 'epoch': 3.2}
+{'eval_loss': 0.004028025548905134, 'eval_per_cls_precision_0': 0.999423018336611, 'eval_per_cls_precision_1': 0.9848202144143936, 'eval_per_cls_precision_2': 0.9514306542728709, 'eval_per_cls_precision_3': 0.8103092783463387, 'eval_per_cls_recall_0': 0.9994653995999019, 'eval_per_cls_recall_1': 0.9859973245311212, 'eval_per_cls_recall_2': 0.954649355398231, 'eval_per_cls_recall_3': 0.6735218508968572, 'eval_macro_precision': 0.9364957913425535, 'eval_macro_recall': 0.9034084826065278, 'eval_macro_f1': 0.9196546246506696, 'eval_overall_accuracy': 0.9988746233570082, 'eval_runtime': 195.752, 'eval_samples_per_second': 73.363, 'eval_steps_per_second': 9.175, 'epoch': 3.2}
+{'train_runtime': 17455.8485, 'train_samples_per_second': 26.326, 'train_steps_per_second': 0.206, 'train_loss': 0.013609967369964157, 'epoch': 4.0}
+***** all metrics *****
+  epoch                    =        4.0
+  train_loss               =     0.0136
+  train_runtime            = 4:50:55.84
+  train_samples_per_second =     26.326
+  train_steps_per_second   =      0.206
+***** test metrics *****
+  test_loss                =      0.004
+  test_macro_f1            =     0.9226
+  test_macro_precision     =      0.942
+  test_macro_recall        =      0.904
+  test_overall_accuracy    =     0.9989
+  test_per_cls_precision_0 =     0.9994
+  test_per_cls_precision_1 =     0.9852
+  test_per_cls_precision_2 =      0.948
+  test_per_cls_precision_3 =     0.8355
+  test_per_cls_recall_0    =     0.9995
+  test_per_cls_recall_1    =     0.9857
+  test_per_cls_recall_2    =     0.9551
+  test_per_cls_recall_3    =     0.6758
+  test_runtime             = 0:03:15.46
+  test_samples_per_second  =      73.47
+  test_steps_per_second    =      9.188
+Loaded model from (trained_model, ./pretrained_segmenter_model/6_12000_layer_model).
+{'loss': 0.0638, 'learning_rate': 0.0004444100340662744, 'epoch': 0.8}
+{'eval_loss': 0.01997246965765953, 'eval_per_cls_precision_0': 0.9960313740195598, 'eval_per_cls_precision_1': 0.9041159180161304, 'eval_per_cls_
