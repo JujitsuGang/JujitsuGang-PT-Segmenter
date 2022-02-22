@@ -214,4 +214,27 @@ Loaded model from (trained_model, ./pretrained_segmenter_model/12_12000_layer_mo
 {'eval_loss': 0.1438155323266983, 'eval_per_cls_precision_0': 0.9720648860476088, 'eval_per_cls_precision_1': 0.0, 'eval_per_cls_precision_2': 0.0, 'eval_per_cls_precision_3': 0.0, 'eval_per_cls_recall_0': 0.9999999999999979, 'eval_per_cls_recall_1': 0.0, 'eval_per_cls_recall_2': 0.0, 'eval_per_cls_recall_3': 0.0, 'eval_macro_precision': 0.2430162215119022, 'eval_macro_recall': 0.24999999999999947, 'eval_macro_f1': 0.24645864170299142, 'eval_overall_accuracy': 0.9720648860476108, 'eval_runtime': 395.4894, 'eval_samples_per_second': 36.312, 'eval_steps_per_second': 18.157, 'epoch': 3.79}
 {'loss': 0.1433, 'learning_rate': 1.2387736141220192e-06, 'epoch': 3.99}
 {'eval_loss': 0.14387483894824982, 'eval_per_cls_precision_0': 0.9720648860476088, 'eval_per_cls_precision_1': 0.0, 'eval_per_cls_precision_2': 0.0, 'eval_per_cls_precision_3': 0.0, 'eval_per_cls_recall_0': 0.9999999999999979, 'eval_per_cls_recall_1': 0.0, 'eval_per_cls_recall_2': 0.0, 'eval_per_cls_recall_3': 0.0, 'eval_macro_precision': 0.2430162215119022, 'eval_macro_recall': 0.24999999999999947, 'eval_macro_f1': 0.24645864170299142, 'eval_overall_accuracy': 0.9720648860476108, 'eval_runtime': 395.4807, 'eval_samples_per_second': 36.313, 'eval_steps_per_second': 18.158, 'epoch': 3.99}
-{'train_runtime': 43170.428, 'train_samples_per_second': 10.645, 'trai
+{'train_runtime': 43170.428, 'train_samples_per_second': 10.645, 'train_steps_per_second': 0.083, 'train_loss': 0.1530194447324959, 'epoch': 4.0}
+***** all metrics *****
+  epoch                    =         4.0
+  train_loss               =       0.153
+  train_runtime            = 11:59:30.42
+  train_samples_per_second =      10.645
+  train_steps_per_second   =       0.083
+***** test metrics *****
+  test_loss                =     0.1427
+  test_macro_f1            =     0.2465
+  test_macro_precision     =     0.2431
+  test_macro_recall        =       0.25
+  test_overall_accuracy    =     0.9723
+  test_per_cls_precision_0 =     0.9723
+  test_per_cls_precision_1 =        0.0
+  test_per_cls_precision_2 =        0.0
+  test_per_cls_precision_3 =        0.0
+  test_per_cls_recall_0    =        1.0
+  test_per_cls_recall_1    =        0.0
+  test_per_cls_recall_2    =        0.0
+  test_per_cls_recall_3    =        0.0
+  test_runtime             = 0:06:36.72
+  test_samples_per_second  =     36.198
+  test_steps_per_second    =       18.1
